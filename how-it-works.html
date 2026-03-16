@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$FREE — How The Price Works</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050505;
+    --white: #f0ede6;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --red: #c0392b;
+    --green: #27ae60;
+    --dim: #111;
+    --muted: #555;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* Grain */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid #111;
+    position: sticky;
+    top: 0;
+    background: rgba(5,5,5,0.97);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .buy-btn {
+    background: var(--gold);
+    color: var(--black);
+    padding: 10px 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .buy-btn:hover { background: var(--gold-light); }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 100px 40px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(50px, 8vw, 100px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 .red { color: var(--red); }
+  .hero h1 .green { color: var(--green); }
+
+  .hero p {
+    font-size: 16px;
+    color: #777;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Arrow diagram */
+  .diagram {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .diagram-box {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .diagram-box.red-box { border-color: rgba(192,57,43,0.3); }
+  .diagram-box.green-box { border-color: rgba(39,174,96,0.3); }
+
+  .diagram-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  .diagram-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .diagram-label.red { color: var(--red); }
+  .diagram-label.green { color: var(--green); }
+
+  .diagram-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .diagram-arrow {
+    font-size: 48px;
+    color: var(--gold);
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+  }
+
+  /* Mechanism section */
+  .section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+  }
+
+  .section-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #111;
+  }
+
+  /* How it works steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 80px;
+  }
+
+  .step {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    padding: 32px 28px;
+    position: relative;
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: #151515;
+    line-height: 1;
+    position: absolute;
+    top: 16px;
+    right: 20px;
+  }
+
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .step p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .step p strong { color: var(--white); }
+
+  /* Signal cards */
+  .signals {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    margin-bottom: 80px;
+  }
+
+  .signal-card {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .signal-card:hover { border-color: #2a2a2a; }
+
+  .signal-weight {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 80px;
+  }
+
+  .signal-info h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .signal-info p {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  .signal-info p strong { color: #888; }
+
+  .signal-tag {
+    display: inline-block;
+    background: #1a1a1a;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    padding: 3px 8px;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  /* Live index */
+  .live-index {
+    background: #080808;
+    border: 1px solid #1a1a1a;
+    padding: 48px;
+    margin-bottom: 80px;
+    text-align: center;
+  }
+
+  .live-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+
+  .index-item {
+    background: #0d0d0d;
+    padding: 24px 16px;
+  }
+
+  .index-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .index-value.gold { color: var(--gold); }
+  .index-value.red { color: var(--red); }
+  .index-value.green { color: var(--green); }
+
+  .index-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* Formula */
+  .formula {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    border-left: 3px solid var(--gold);
+    padding: 32px 40px;
+    margin-bottom: 80px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .formula-title {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .formula-eq {
+    font-size: 14px;
+    color: var(--white);
+    line-height: 2.2;
+  }
+
+  .formula-eq .var { color: var(--gold); }
+  .formula-eq .op { color: #444; }
+  .formula-eq .comment { color: #333; font-size: 11px; }
+
+  /* Why it works */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 80px;
+  }
+
+  .why-card {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    padding: 28px;
+  }
+
+  .why-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .why-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .why-card p {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 80px 40px;
+    border-top: 1px solid #111;
+  }
+
+  .cta-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 80px);
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 32px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  .cta-big {
+    display: inline-block;
+    padding: 18px 48px;
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .cta-big:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .contract {
+    margin-top: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #333;
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  .contract span { color: #444; }
+
+  footer {
+    border-top: 1px solid #111;
+    padding: 32px 40px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #222;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .diagram { grid-template-columns: 1fr; }
+    .diagram-arrow { transform: rotate(90deg); }
+    .steps { grid-template-columns: 1fr; }
+    .signals { grid-template-columns: 1fr; }
+    .index-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-grid { grid-template-columns: 1fr; }
+    .section { padding: 0 20px 60px; }
+    .live-index { padding: 32px 20px; }
+    .formula { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">$FREE</div>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#signals">Signals</a></li>
+    <li><a href="#formula">Formula</a></li>
+  </ul>
+  <a href="https://pump.fun/coin/EYUhJcYZa5aAAPZ4VnMSYRrgXPeJtPxcRMKjM4iDpump" class="buy-btn" target="_blank">Buy $FREE</a>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-tag">// Price Mechanism Explained</div>
+  <h1>
+    PRISON POP <span class="red">FALLS</span><br>
+    $FREE <span class="green">RISES</span>
+  </h1>
+  <p>$FREE is a Solana token built around a simple truth — the Freedom Index tracks real US incarceration data daily and creates transparent buying pressure when America gets freer.</p>
+</div>
+
+<!-- Diagram -->
+<div class="diagram">
+  <div class="diagram-box red-box">
+    <div class="diagram-icon">🏛️</div>
+    <div class="diagram-label red">Prison Pop Falls</div>
+    <div class="diagram-sub">Real govt data · Daily tracking</div>
+  </div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-box green-box">
+    <div class="diagram-icon">📈</div>
+    <div class="diagram-label green">$FREE Rises</div>
+    <div class="diagram-sub">Freedom Index increases · Buy pressure</div>
+  </div>
+</div>
+
+<!-- How It Works -->
+<div class="section" id="how">
+  <div class="section-header">// How It Works — Step By Step</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Data Is Pulled Daily</div>
+      <p>Every day our engine pulls real incarceration data from <strong>Vera Institute</strong>, arrest rates from <strong>FBI Crime Data</strong>, and reform legislation from <strong>GovTrack</strong>. All publicly verifiable government sources.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Freedom Index Calculated</div>
+      <p>The data feeds into the <strong>Freedom Index</strong> — a score from 0 to 100. Lower incarceration = higher score. More reform news = higher score. More active legislation = higher score.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Market Responds</div>
+      <p>The Freedom Index is published daily on social media and this dashboard. Holders and traders use it as a <strong>signal to buy or sell</strong> — creating real price movement tied to real world data.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Live Index -->
+<div class="section">
+  <div class="section-header">// Current Freedom Index</div>
+  <div class="live-index">
+    <div class="live-tag">
+      <div class="live-dot"></div>
+      Live Data — Updated Daily
+    </div>
+    <div class="index-grid">
+      <div class="index-item">
+        <div class="index-value gold" id="mainScore">43.7</div>
+        <div class="index-label">Freedom Index</div>
+      </div>
+      <div class="index-item">
+        <div class="index-value red">2,310,000</div>
+        <div class="index-label">Incarcerated</div>
+      </div>
+      <div class="index-item">
+        <div class="index-value">0.69%</div>
+        <div class="index-label">% of US Pop</div>
+      </div>
+      <div class="index-item">
+        <div class="index-value">531</div>
+        <div class="index-label">Per 100k Citizens</div>
+      </div>
+    </div>
+    <p style="font-family:'Space Mono',monospace;font-size:11px;color:#333;letter-spacing:1px;">
+      Data sources: Vera Institute · Bureau of Justice Statistics · FBI Crime Data Explorer
+    </p>
+  </div>
+</div>
+
+<!-- Signals -->
+<div class="section" id="signals">
+  <div class="section-header">// The Four Price Signals</div>
+  <div class="signals">
+    <div class="signal-card">
+      <div class="signal-weight">50%</div>
+      <div class="signal-info">
+        <h3>Incarceration Rate</h3>
+        <p>The core signal. Pulled from <strong>Vera Institute</strong> and Bureau of Justice Statistics. When the total incarcerated population drops relative to US population, this score rises — creating the strongest upward pressure on $FREE.</p>
+        <span class="signal-tag">VERA INSTITUTE · BJS · ANNUAL/MONTHLY</span>
+      </div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-weight">30%</div>
+      <div class="signal-info">
+        <h3>News Sentiment</h3>
+        <p>Tracks <strong>criminal justice reform news</strong> daily via NewsAPI. More positive reform stories = higher sentiment score. This creates daily price movement even when hard census data hasn't updated yet.</p>
+        <span class="signal-tag">NEWSAPI · REAL-TIME · DAILY</span>
+      </div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-weight">20%</div>
+      <div class="signal-info">
+        <h3>Reform Legislation</h3>
+        <p>Tracks active <strong>criminal justice bills in Congress</strong> via GovTrack API. More active reform legislation signals political will to reduce incarceration — a leading indicator of future population drops.</p>
+        <span class="signal-tag">GOVTRACK API · REAL-TIME · WEEKLY</span>
+      </div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-weight">+</div>
+      <div class="signal-info">
+        <h3>Community Momentum</h3>
+        <p>As the $FREE community grows, <strong>collective belief in reform</strong> drives additional buying pressure. Social tokens gain value when communities rally around a shared mission — this is the viral multiplier.</p>
+        <span class="signal-tag">SOCIAL SIGNAL · ORGANIC · ONGOING</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Formula -->
+<div class="section" id="formula">
+  <div class="section-header">// The Freedom Index Formula</div>
+  <div class="formula">
+    <div class="formula-title">// freedom_index.calculate()</div>
+    <div class="formula-eq">
+      <span class="var">FREEDOM_INDEX</span> <span class="op">=</span><br>
+      &nbsp;&nbsp;(<span class="var">incarceration_score</span> <span class="op">×</span> 0.50) <span class="comment">// 50% weight — core metric</span><br>
+      &nbsp;&nbsp;+ (<span class="var">news_sentiment_score</span> <span class="op">×</span> 0.30) <span class="comment">// 30% weight — daily signal</span><br>
+      &nbsp;&nbsp;+ (<span class="var">legislation_score</span> <span class="op">×</span> 0.20) <span class="comment">// 20% weight — leading indicator</span><br><br>
+      <span class="var">incarceration_score</span> <span class="op">=</span> max(0, (1 - (rate / 0.007))) × 100<br>
+      <span class="comment">// score 100 when rate = 0, score 0 when rate ≥ 0.7%</span><br><br>
+      <span class="var">news_score</span> <span class="op">=</span> (sentiment + 1) / 2 × 100<br>
+      <span class="comment">// normalized from -1→1 range to 0→100</span><br><br>
+      <span class="var">legislation_score</span> <span class="op">=</span> min(active_bills × 10, 100)<br>
+      <span class="comment">// 10 active bills = max score</span>
+    </div>
+  </div>
+</div>
+
+<!-- Why It Works -->
+<div class="section">
+  <div class="section-header">// Why This Creates Real Value</div>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon">📊</div>
+      <div class="why-title">Real Data Backing</div>
+      <p>Unlike 99% of tokens, $FREE has a transparent, verifiable data engine behind it. Every score update links to government sources anyone can check.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🎯</div>
+      <div class="why-title">Two Audiences</div>
+      <p>$FREE appeals to crypto traders AND criminal justice advocates — doubling the potential buyer pool compared to typical memecoins.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📰</div>
+      <div class="why-title">Built-In News Cycle</div>
+      <p>Every major criminal justice story becomes a $FREE story. High-profile cases, legislation, reforms — all drive attention and trading volume automatically.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔄</div>
+      <div class="why-title">Daily Relevance</div>
+      <p>The Freedom Index posts daily keep $FREE in front of people constantly. Most tokens go silent after launch — $FREE always has something new to say.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🌱</div>
+      <div class="why-title">Mission Driven</div>
+      <p>People hold tokens they believe in longer. A token tied to a real social cause creates emotional investment that goes beyond pure speculation.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Viral Potential</div>
+      <p>The concept is instantly explainable in one sentence. That makes it shareable — one viral post from a justice advocate could bring thousands of new holders overnight.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>JOIN THE MOVEMENT</h2>
+  <p>Every $FREE purchase is a vote for criminal justice reform</p>
+  <a href="https://pump.fun/coin/EYUhJcYZa5aAAPZ4VnMSYRrgXPeJtPxcRMKjM4iDpump" class="cta-big" target="_blank">BUY $FREE NOW</a>
+  <div class="contract">
+    Contract: <span>EYUhJcYZa5aAAPZ4VnMSYRrgXPeJtPxcRMKjM4iDpump</span><br>
+    Network: Solana · Exchange: Pump.fun · Ticker: $FREE
+  </div>
+</div>
+
+<footer>
+  $FREE TOKEN · FREEDOM INDEX · BUILT ON SOLANA · @FREEINDEXTOKEN<br>
+  <span style="margin-top:8px;display:block;color:#1a1a1a;">Not financial advice · Token value tied to real-world justice metrics · Trade responsibly</span>
+</footer>
+
+<script>
+  // Animate the freedom index score on load
+  const scoreEl = document.getElementById('mainScore');
+  const target = 43.7;
+  let current = 0;
+  const duration = 2000;
+  const start = performance.now();
+
+  function animate(time) {
+    const elapsed = time - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    current = eased * target;
+    scoreEl.textContent = current.toFixed(1);
+    if (progress < 1) requestAnimationFrame(animate);
+  }
+
+  setTimeout(() => requestAnimationFrame(animate), 500);
+</script>
+
+</body>
+</html>
