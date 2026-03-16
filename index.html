@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$FREE — Freedom Index</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050505;
+    --white: #f0ede6;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --red: #c0392b;
+    --green: #27ae60;
+    --dim: #2a2a2a;
+    --muted: #666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid #1a1a1a;
+    position: sticky;
+    top: 0;
+    background: rgba(5,5,5,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+
+  .logo span {
+    color: var(--white);
+    opacity: 0.3;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* Hero section */
+  .hero {
+    padding: 80px 40px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .hero-left h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 8vw, 110px);
+    line-height: 0.9;
+    color: var(--white);
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+
+  .hero-left h1 .gold { color: var(--gold); }
+
+  .hero-left p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #888;
+    max-width: 420px;
+    margin-bottom: 32px;
+  }
+
+  .hero-left p strong {
+    color: var(--white);
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .cta-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  /* Freedom Index Gauge */
+  .gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .gauge-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .gauge-wrapper {
+    position: relative;
+    width: 280px;
+    height: 280px;
+  }
+
+  .gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .gauge-bg {
+    fill: none;
+    stroke: #1a1a1a;
+    stroke-width: 18;
+  }
+
+  .gauge-fill {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 18;
+    stroke-linecap: round;
+    stroke-dasharray: 691;
+    stroke-dashoffset: 691;
+    transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.6));
+  }
+
+  .gauge-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gauge-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .gauge-max {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .gauge-trend {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 1px;
+  }
+
+  /* Stats grid */
+  .stats-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+  }
+
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-bottom: 60px;
+  }
+
+  .stat-card {
+    background: #0d0d0d;
+    padding: 28px 24px;
+    border: 1px solid #1a1a1a;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover {
+    border-color: #333;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: var(--white);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .stat-value.negative { color: var(--red); }
+  .stat-value.positive { color: var(--green); }
+  .stat-value.gold { color: var(--gold); }
+
+  .stat-sub {
+    font-size: 11px;
+    color: #555;
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Index breakdown */
+  .breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 60px;
+  }
+
+  .breakdown-card {
+    background: #0d0d0d;
+    padding: 32px;
+    border: 1px solid #1a1a1a;
+  }
+
+  .breakdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .breakdown-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+
+  .breakdown-weight {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    background: #1a1a1a;
+    padding: 4px 10px;
+  }
+
+  .bar-track {
+    height: 4px;
+    background: #1a1a1a;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--gold);
+    width: 0%;
+    transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bar-score {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Incarceration counter */
+  .counter-section {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 48px;
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .counter-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .counter-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 10vw, 120px);
+    color: var(--red);
+    letter-spacing: 4px;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(192, 57, 43, 0.3));
+  }
+
+  .counter-sub {
+    font-size: 14px;
+    color: #555;
+    margin-top: 16px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  .counter-sub span {
+    color: var(--white);
+  }
+
+  /* News feed */
+  .news-feed {
+    margin-bottom: 60px;
+  }
+
+  .news-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #111;
+    align-items: flex-start;
+  }
+
+  .news-index {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: #222;
+    line-height: 1;
+    min-width: 40px;
+  }
+
+  .news-content h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .news-source {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid #1a1a1a;
+    padding: 40px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #333;
+    letter-spacing: 2px;
+  }
+
+  footer span { color: var(--gold); }
+
+  /* Loading state */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  .loading-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: loadpulse 1.2s infinite;
+  }
+
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes loadpulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 20px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .breakdown { grid-template-columns: 1fr; }
+    .topbar { padding: 16px 20px; }
+    .stats-section { padding: 0 20px 60px; }
+    .counter-section { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<nav class="topbar">
+  <div class="logo">$<span>FREE</span> TOKEN</div>
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a href="how-it-works.html" style="font-family:'Space Mono',monospace;font-size:11px;color:#555;text-decoration:none;letter-spacing:2px;text-transform:uppercase;">How It Works</a>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Freedom Index Live
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-left">
+    <h1>WHEN<br>AMERICA<br>GETS<br><span class="gold">FREER</span></h1>
+    <p>
+      <strong>$FREE</strong> is a Solana token whose value is tied to US incarceration rates. 
+      As prison populations decrease, the Freedom Index rises — and so does $FREE.
+    </p>
+    <a href="https://pump.fun/coin/EYUhJcYZa5aAAPZ4VnMSYRrgXPeJtPxcRMKjM4iDpump" class="cta-btn" id="buyBtn" target="_blank">Buy $FREE on Pump.fun</a>
+  </div>
+
+  <div class="gauge-container">
+    <div class="gauge-label">Freedom Index</div>
+    <div class="gauge-wrapper">
+      <svg class="gauge-svg" viewBox="0 0 120 120">
+        <circle class="gauge-bg" cx="60" cy="60" r="52"/>
+        <circle class="gauge-fill" id="gaugeFill" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-score" id="gaugeScore">--</div>
+        <div class="gauge-max">/ 100</div>
+        <div class="gauge-trend" id="gaugeTrend">loading...</div>
+      </div>
+    </div>
+    <div class="gauge-label" id="gaugeDate">--</div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-section">
+
+  <!-- Counter -->
+  <div class="counter-section">
+    <div class="counter-label">Americans Currently Incarcerated</div>
+    <div class="counter-number" id="mainCounter">2,310,000</div>
+    <div class="counter-sub">That's <span id="pctDisplay">0.69%</span> of the entire US population — more than any country on Earth</div>
+  </div>
+
+  <!-- Key Stats -->
+  <div class="section-title">// Key Metrics</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Prison Population</div>
+      <div class="stat-value negative" id="prisonPop">1.23M</div>
+      <div class="stat-sub">State + Federal</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Jail Population</div>
+      <div class="stat-value negative" id="jailPop">664K</div>
+      <div class="stat-sub">Pre-trial + sentenced</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Per 100K Citizens</div>
+      <div class="stat-value gold" id="per100k">531</div>
+      <div class="stat-sub">US rate vs 49 globally</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Annual Cost</div>
+      <div class="stat-value" id="annualCost">$80B</div>
+      <div class="stat-sub">Taxpayer dollars</div>
+    </div>
+  </div>
+
+  <!-- Index Breakdown -->
+  <div class="section-title">// Freedom Index Breakdown</div>
+  <div class="breakdown">
+    <div class="breakdown-card">
+      <div class="breakdown-header">
+        <div class="breakdown-name">Incarceration Rate</div>
+        <div class="breakdown-weight">50% Weight</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="bar1"></div></div>
+      <div class="bar-score" id="score1">Score: --/100</div>
+    </div>
+    <div class="breakdown-card">
+      <div class="breakdown-header">
+        <div class="breakdown-name">News Sentiment</div>
+        <div class="breakdown-weight">30% Weight</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="bar2"></div></div>
+      <div class="bar-score" id="score2">Score: --/100</div>
+    </div>
+    <div class="breakdown-card">
+      <div class="breakdown-header">
+        <div class="breakdown-name">Reform Legislation</div>
+        <div class="breakdown-weight">20% Weight</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="bar3"></div></div>
+      <div class="bar-score" id="score3">Score: --/100</div>
+    </div>
+    <div class="breakdown-card">
+      <div class="breakdown-header">
+        <div class="breakdown-name">Data Sources</div>
+        <div class="breakdown-weight">Verified</div>
+      </div>
+      <div style="font-family: 'Space Mono', monospace; font-size: 11px; color: #555; line-height: 2;">
+        → Vera Institute of Justice<br>
+        → Bureau of Justice Statistics<br>
+        → FBI Crime Data Explorer<br>
+        → GovTrack Legislation API<br>
+        → NewsAPI Sentiment Engine
+      </div>
+    </div>
+  </div>
+
+  <!-- News Feed -->
+  <div class="section-title">// Latest Reform News</div>
+  <div class="news-feed" id="newsFeed">
+    <div class="loading">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      &nbsp;Fetching latest news
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  <p>$FREE TOKEN — <span>FREEDOM INDEX</span> — BUILT ON SOLANA</p>
+  <p style="margin-top:8px; color:#222;">Data updated daily · Not financial advice · Token tied to real-world justice metrics</p>
+</footer>
+
+<script>
+// ─────────────────────────────
+// CONFIG
+// ─────────────────────────────
+const PUMP_FUN_URL = "https://pump.fun/coin/EYUhJcYZa5aAAPZ4VnMSYRrgXPeJtPxcRMKjM4iDpump";
+const US_POPULATION = 335000000;
+
+// Static baseline data (replace with live API calls once keys are set up)
+const BASELINE_DATA = {
+  total_incarcerated: 2310000,
+  prison_population: 1230100,
+  jail_population: 664200,
+  free_index: 43.7,
+  incarceration_score: 38.2,
+  news_score: 55.1,
+  legislation_score: 42.0,
+  year: "2023"
+};
+
+// Sample news (replace with live NewsAPI calls)
+const SAMPLE_NEWS = [
+  { title: "Senate introduces new bail reform legislation targeting pretrial detention", source: "Reuters" },
+  { title: "Prison population drops for third consecutive year in major study", source: "AP News" },
+  { title: "Several states move to expand early release programs", source: "The Guardian" },
+  { title: "Criminal justice advocates push for sentencing reform in Congress", source: "NPR" },
+  { title: "New report shows rehabilitation programs reduce recidivism by 40%", source: "Washington Post" }
+];
+
+// ─────────────────────────────
+// RENDER FUNCTIONS
+// ─────────────────────────────
+function animateValue(el, start, end, duration, formatter) {
+  const startTime = performance.now();
+  const update = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = start + (end - start) * eased;
+    el.textContent = formatter(current);
+    if (progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+function renderGauge(score) {
+  const circumference = 2 * Math.PI * 52;
+  const offset = circumference - (score / 100) * circumference;
+  
+  const fill = document.getElementById('gaugeFill');
+  const scoreEl = document.getElementById('gaugeScore');
+  const trendEl = document.getElementById('gaugeTrend');
+  const dateEl = document.getElementById('gaugeDate');
+
+  // Color based on score
+  if (score < 30) fill.style.stroke = '#c0392b';
+  else if (score < 60) fill.style.stroke = '#c9a84c';
+  else fill.style.stroke = '#27ae60';
+
+  setTimeout(() => {
+    fill.style.strokeDashoffset = offset;
+  }, 300);
+
+  animateValue(scoreEl, 0, score, 2000, v => Math.round(v));
+  
+  trendEl.textContent = score > 50 ? '▲ ABOVE BASELINE' : '▼ BELOW TARGET';
+  trendEl.style.color = score > 50 ? '#27ae60' : '#c9a84c';
+  
+  const now = new Date();
+  dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function renderStats(data) {
+  const total = data.total_incarcerated;
+  const pct = ((total / US_POPULATION) * 100).toFixed(2);
+
+  animateValue(
+    document.getElementById('mainCounter'), 
+    0, total, 2500, 
+    v => Math.round(v).toLocaleString()
+  );
+
+  document.getElementById('pctDisplay').textContent = pct + '%';
+  document.getElementById('prisonPop').textContent = (data.prison_population / 1000000).toFixed(2) + 'M';
+  document.getElementById('jailPop').textContent = Math.round(data.jail_population / 1000) + 'K';
+  document.getElementById('per100k').textContent = Math.round((total / US_POPULATION) * 100000);
+}
+
+function renderBreakdown(data) {
+  const bars = [
+    { bar: 'bar1', score: 'score1', value: data.incarceration_score },
+    { bar: 'bar2', score: 'score2', value: data.news_score },
+    { bar: 'bar3', score: 'score3', value: data.legislation_score }
+  ];
+
+  bars.forEach(({ bar, score, value }) => {
+    setTimeout(() => {
+      document.getElementById(bar).style.width = value + '%';
+    }, 400);
+    document.getElementById(score).textContent = `Score: ${value.toFixed(1)}/100`;
+  });
+}
+
+function renderNews(articles) {
+  const feed = document.getElementById('newsFeed');
+  feed.innerHTML = articles.map((article, i) => `
+    <div class="news-item">
+      <div class="news-index">0${i + 1}</div>
+      <div class="news-content">
+        <h4>${article.title}</h4>
+        <div class="news-source">${article.source}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────
+// LIVE DATA FETCH (NewsAPI)
+// ─────────────────────────────
+async function fetchLiveNews() {
+  // Once you have a NewsAPI key, uncomment and replace YOUR_KEY:
+  /*
+  try {
+    const res = await fetch(
+      `https://newsapi.org/v2/everything?q=criminal+justice+reform&language=en&sortBy=publishedAt&pageSize=5&apiKey=YOUR_NEWSAPI_KEY`
+    );
+    const data = await res.json();
+    return data.articles.map(a => ({ title: a.title, source: a.source.name }));
+  } catch(e) {
+    return SAMPLE_NEWS;
+  }
+  */
+  return SAMPLE_NEWS; // Using sample until API key added
+}
+
+// ─────────────────────────────
+// INIT
+// ─────────────────────────────
+async function init() {
+  
+  const data = BASELINE_DATA;
+  
+  renderGauge(data.free_index);
+  renderStats(data);
+  renderBreakdown(data);
+  
+  const news = await fetchLiveNews();
+  renderNews(news);
+}
+
+// Staggered init for dramatic effect
+window.addEventListener('load', () => {
+  setTimeout(init, 500);
+});
+</script>
+</body>
+</html>
